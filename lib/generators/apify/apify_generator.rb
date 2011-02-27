@@ -5,10 +5,22 @@ class Rails::ApifyGenerator < Rails::Generators::Base
 
 
   def manifest
+    model_name = self.model_name.downcase
+    generate "model", "#{model_name} #{fields.join(' ')}"
+    create_file "app/controllers/#{model_name.pluralize}_controller.rb", get_controller_template(model_name)
+    generate "integration_test", "#{model_name.pluralize}Controller"
+    route "resources :#{model_name.pluralize}"
+    generate "helper", "#{model_name}"
+  end
+
+
+  private
+
+  def get_controller_template(model_name)
     model = model_name.capitalize
 
-    @controller_template = <<"FILE"
-class #{model.pluralize}Controller << ApplicationController
+    template = <<-FILE
+class #{model.pluralize}Controller < ApplicationController
 
   respond_to :json
 
@@ -35,13 +47,8 @@ class #{model.pluralize}Controller << ApplicationController
     respond_with(@#{model_name} = @#{model_name}.destroy)
   end
 end
-FILE
+    FILE
 
-    #generate "model", "#{model_name} #{fields.join(' ')}"
-    #
-    create_file "app/controllers/#{model_name.pluralize}_controller.rb", @controller_template
-    route "resources :#{model_name.pluralize}"
-
+    template
   end
-
 end
