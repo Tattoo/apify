@@ -5,16 +5,19 @@ class Rails::ApifyGenerator < Rails::Generators::Base
 
 
   def manifest
-    model_name = self.model_name.downcase
-    generate "model", "#{model_name} #{fields.join(' ')}"
-    create_file "app/controllers/#{model_name.pluralize}_controller.rb", get_controller_template(model_name)
-    generate "integration_test", "#{model_name.pluralize}Controller"
-    route "resources :#{model_name.pluralize}"
-    generate "helper", "#{model_name}"
+ #   model_name = self.model_name.downcase
+ #   generate "model", "#{model_name} #{fields.join(' ')}"
+ #   create_file "app/controllers/#{model_name.pluralize}_controller.rb", get_controller_template(model_name)
+    generate_tests model_name
+ #   route "resources :#{model_name.pluralize}"
+ #   generate "helper", "#{model_name}"
   end
 
 
   private
+
+  
+
 
   def get_controller_template(model_name)
     model = model_name.capitalize
@@ -50,5 +53,19 @@ end
     FILE
 
     template
+  end
+
+
+  def generate_tests(model_name)
+    controller = "#{model_name.pluralize}Controller"
+    generate "integration_test", controller
+    #TODO FIXME
+    #insert_into_file "test/integration/#{model_name.pluralize}_controller_test.rb", "FOOBAR", :after => "require 'test_helper'\n"
+     
+    
+  end
+
+  def get_rspec_template()
+    "ASDASDASDADS"
   end
 end
